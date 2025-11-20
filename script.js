@@ -440,74 +440,171 @@ window.switchChat = (id, name) => {
     navigateTo('chat-room'); 
 }
 
+// LOGIKA CHAT BARU (AVATAR + BUBBLE THEME + REACTION)
 function loadChatMessages(chatId) { 
-    const c = document.getElementById('chat-messages'); 
-    c.innerHTML = '<div class="text-center text-gray-500 text-xs pt-4">Memuat pesan...</div>';
+     const c = document.getElementById('chat-messages'); 
+     c.innerHTML = '<div class="text-center text-gray-500 text-xs pt-4">Memuat pesan...</div>';
      
-    if(chatListenerRef) off(chatListenerRef);
-    chatListenerRef = ref(rtdb, `community/messages/${chatId}`);
+     if(chatListenerRef) off(chatListenerRef);
+     chatListenerRef = ref(rtdb, `community/messages/${chatId}`);
      
-    onValue(chatListenerRef, s => {
-        c.innerHTML = '';
-        const data = s.val();
-        
-        if(!data) { 
-            c.innerHTML = '<div class="text-center text-gray-500 text-xs pt-10">Mulai obrolan baru.</div>'; 
-            return; 
-        }
+     onValue(chatListenerRef, s => {
+         c.innerHTML = '';
+         const data = s.val();
+         if(!data) { c.innerHTML = '<div class="text-center text-gray-500 text-xs pt-40 opacity-50">Mulai obrolan baru...</div>'; return; }
          
-        Object.values(data).slice(-50).forEach(m => {
-            const isMe = m.username === user.username;
-            const userPic = m.pic || `https://ui-avatars.com/api/?name=${m.username}&background=random`;
-            
-            let content = m.text;
-            if(m.type === 'image_once') {
-                 const isViewed = localStorage.getItem(`viewed_${m.id}`);
-                 if(isViewed) content = `<div class="text-gray-500 italic text-xs"><i class="fas fa-eye-slash mr-1"></i> Foto hangus</div>`;
-                 else content = `<img src="${m.text}" class="chat-image view-once-blur" onclick="viewOnce(this, '${m.id}')"><div class="text-[10px] text-red-400 mt-1"><i class="fas fa-bomb mr-1"></i> 1x Lihat</div>`;
-            } else if(m.type === 'image') {
-                 content = `<img src="${m.text}" class="chat-image" onclick="zoomImage('${m.text}')">`;
-            } else if(m.type === 'audio') {
-                 content = `<audio controls src="${m.text}" class="w-48 h-8 mt-1"></audio>`;
-            }
+         Object.values(data).slice(-70).forEach(m => { // Load 70 pesan terakhir
+             const isMe = m.username === user.username;
+             const userPic = m.pic || `https://ui-avatars.com/api/?name=${m.username}&background=random`;
              
-            const rowClass = isMe ? 'chat-row me' : 'chat-row other';
-            const bubbleClass = isMe ? 'chat-me' : 'chat-other';
+             // Tentukan Kelas Warna Bubble (Default atau Custom)
+             let bubbleTheme = 'bubble-default';
+             if(isMe && user.bubbleTheme) bubbleTheme = user.bubbleTheme; // Ambil dari setting user
+             if(m.bubbleTheme) bubbleTheme = m.bubbleTheme; // Atau dari data pesan itu sendiri
              
-            c.innerHTML += `
-                <div class="${rowClass}">
-                    <img src="${userPic}" class="chat-avatar-img">
-                    <div class="chat-bubble ${bubbleClass}">
-                        ${!isMe ? `<span class="chat-username-label">${m.username}</span>` : ''}
+             let content = m.text;
+             if(m.type === 'image') content = `<img src="${m.text}" class="chat-image" onclick="event.stopPropagation(); zoomImage('${m.text}')">`;
+             if(m.type === 'audio') content = `<audio controls src="${m.text}" class="w-48 h-8 mt-1" onclick="event.stopPropagation()"></audio>`;
+             
+             // Render HTML
+             c.innerHTML += `
+                <div class="chat-row ${isMe?'me':'other'}">
+                    <img src="${userPic}" class="chat-avatar-tiny">
+                    
+                    <div class="chat-bubble ${isMe ? bubbleTheme : 'bubble-default'}" onclick="openMsgOptions('${m.id}', '${m.username}', '${m.text}', ${isMe}, this)">
+                        ${!isMe ? `<div class="text-[9px] font-bold opacity-50 mb-1">${m.username}</div>` : ''}
                         ${content}
+                        
+                        <div class="msg-reaction ${m.liked ? 'active' : ''}">❤️</div>
                     </div>
                 </div>
-            `;
-        });
-        c.scrollTop = c.scrollHeight;
+             `;
+         });
+         c.scrollTop = c.scrollHeight;
+     });
+}
+
+
+
+
+// --- CHAT INTERACTION LOGIC (IG STYLE) ---
+let selectedMsg = null; // Menyimpan data pesan yang sedang ditekan
+
+window.openMsgOptions = (id, username, text, isMe, el) => {
+    selectedMsg = { id, username, text, isMe, element: el };
+    
+    // 1. Clone elemen pesan biar efeknya kayak "Pop Out"
+    const clone = el.cloneNode(true);
+    clone.id = "msg-focus-clone";
+    clone.style.margin = "0";
+    clone.onclick = null; // Matikan klik di clone
+    
+    const area = document.getElementById('msg-focus-area');
+    area.innerHTML = '';
+    area.appendChild(clone);
+    
+    // 2. Atur tombol Hapus (Hanya bisa hapus pesan sendiri)
+    const btnDel = document.getElementById('btn-delete-msg');
+    if (isMe || user.role === 'developer') btnDel.style.display = 'flex';
+    else btnDel.style.display = 'none';
+    
+    // 3. Munculkan Overlay
+    document.getElementById('msg-options-overlay').classList.add('active');
+    
+    // Efek getar dikit (Haptic)
+    if(navigator.vibrate) navigator.vibrate(10);
+}
+
+window.closeMsgOptions = () => {
+    document.getElementById('msg-options-overlay').classList.remove('active');
+    selectedMsg = null;
+}
+
+window.actionLike = () => {
+    if(!selectedMsg) return;
+    const path = `community/messages/${curChatId}/${selectedMsg.id}/liked`;
+    // Cek status like sekarang lalu balik (Toggle)
+    get(ref(rtdb, path)).then(s => {
+        set(ref(rtdb, path), !s.val());
+        closeMsgOptions();
+        showGameToast(s.val() ? "Unlike" : "Liked ❤️", "success");
     });
 }
 
+window.actionCopy = () => {
+    if(!selectedMsg) return;
+    navigator.clipboard.writeText(selectedMsg.text);
+    closeMsgOptions();
+    showGameToast("Teks disalin", "success");
+}
+
+window.actionDelete = () => {
+    if(!selectedMsg) return;
+    if(confirm("Tarik pesan ini?")) {
+        remove(ref(rtdb, `community/messages/${curChatId}/${selectedMsg.id}`));
+        closeMsgOptions();
+    }
+}
+
+window.actionTheme = async () => {
+    if(!selectedMsg || !selectedMsg.isMe) {
+        showGameToast("Hanya bisa ubah warna pesan sendiri!", "error");
+        return;
+    }
+    closeMsgOptions();
+    
+    const { value: theme } = await Swal.fire({
+        title: 'Pilih Warna Pesan',
+        input: 'select',
+        inputOptions: {
+            'bubble-blue': 'Ocean Blue',
+            'bubble-purple': 'Cosmic Purple',
+            'bubble-orange': 'Sunset Orange',
+            'bubble-pink': 'Neon Pink'
+        },
+        inputPlaceholder: 'Pilih Tema',
+        showCancelButton: true,
+        background: '#1e293b', color: '#fff'
+    });
+
+    if (theme) {
+        // Simpan preferensi user secara global biar semua pesan berubah
+        user.bubbleTheme = theme;
+        localStorage.setItem('user', JSON.stringify(user));
+        // Update ke DB User (Opsional, biar permanen)
+        update(ref(rtdb, `users/${user.username}`), { bubbleTheme: theme });
+        // Reload chat agar berubah
+        loadChatMessages(curChatId);
+        showGameToast("Tema Pesan Diubah!", "success");
+    }
+}
+
+
+
+
+
+
+
+
+
 window.sendMessage = () => { 
-    const inp = document.getElementById('chat-input'); 
-    const t = inp.value.trim(); 
-    if(!t) return; 
+    const inp = document.getElementById('chat-input'); const t = inp.value.trim(); if(!t) return; 
     
     const pay = {
         text: t, 
         username: user.username, 
-        pic: user.profile_pic || user.pic || `https://ui-avatars.com/api/?name=${user.username}`,
+        pic: user.profile_pic || user.pic, 
         type: 'text', 
-        timestamp: serverTimestamp()
+        timestamp: serverTimestamp(),
+        // KIRIM TEMA WARNA SAAT INI
+        bubbleTheme: user.bubbleTheme || 'bubble-default' 
     }; 
     
-    if(replyingToMsg) pay.replyTo = replyingToMsg; 
-    
     push(ref(rtdb, `community/messages/${curChatId}`), pay).then(() => { 
-        inp.value = ''; 
-        replyingToMsg = null; 
-        document.getElementById('reply-ui').classList.add('hidden'); 
-        runTransaction(ref(rtdb, `users/${user.username}/xp`), x => (x||0)+5); 
+        inp.value=''; 
+        // Bunyi 'pop' kecil saat kirim
+        const aud = new Audio('https://cdn.freesound.org/previews/554/554446_11998658-lq.mp3'); // Sound effect opsional
+        aud.volume = 0.2; aud.play().catch(()=>{});
     }); 
 }
 
