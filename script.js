@@ -60,6 +60,23 @@ window.onload = () => {
     document.getElementById('btn-login-submit').addEventListener('click', doLogin); 
 };
 
+
+
+// TEMPEL KODE INI DI BAGIAN ATAS SCRIPT.JS (Di bawah imports)
+
+function showGameToast(msg, type) {
+    Toastify({
+        text: msg,
+        duration: 3000,
+        gravity: "top",
+        position: "center",
+        className: `gaming-toast ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`,
+        stopOnFocus: true
+    }).showToast();
+}
+
+
+
 function initApp() {
     document.getElementById('login-modal').classList.add('hidden');
     
