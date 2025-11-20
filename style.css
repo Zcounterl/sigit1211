@@ -508,3 +508,122 @@ main {
 
 
 
+
+
+
+
+
+
+
+
+/* --- INSTAGRAM STYLE COMMENTS --- */
+#comment-section {
+    background: #000; /* IG Dark Mode Background */
+    border-top: 1px solid #262626;
+    padding-top: 12px;
+    margin-top: 10px;
+}
+
+.comment-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px; /* Jarak foto ke teks */
+    padding: 8px 16px;
+    margin-bottom: 4px;
+}
+
+.comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #262626;
+    flex-shrink: 0; /* Agar foto tidak gepeng */
+}
+
+.comment-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.comment-header {
+    display: inline; /* Agar nama & teks nyatu baris kalau pendek */
+    font-size: 13px;
+    line-height: 18px;
+    color: #f5f5f5;
+}
+
+.comment-username {
+    font-weight: 600;
+    margin-right: 6px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.comment-text {
+    font-weight: 400;
+    color: #f5f5f5;
+}
+
+.comment-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: #a8a8a8; /* Warna abu khas IG */
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.comment-reply-btn {
+    cursor: pointer;
+    color: #a8a8a8;
+}
+.comment-reply-btn:hover { color: #fff; }
+
+.comment-like-btn {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a8a8a8;
+    cursor: pointer;
+    margin-top: 8px; /* Sejajar dengan baris pertama teks */
+}
+.comment-like-btn:hover { color: #888; }
+.comment-like-btn.liked { color: #ff3040; } /* Merah IG */
+
+/* Input Komentar Floating di Bawah */
+.comment-input-area {
+    position: sticky;
+    bottom: 0;
+    background: #000;
+    border-top: 1px solid #262626;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10;
+}
+.comment-input-box {
+    flex: 1;
+    background: #000;
+    border: 1px solid #363636;
+    border-radius: 22px;
+    padding: 10px 16px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+}
+.comment-input-box::placeholder { color: #a8a8a8; }
+.comment-send-btn {
+    color: #0095f6; /* Biru IG */
+    font-weight: 600;
+    font-size: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.comment-send-btn:disabled { opacity: 0.5; cursor: default; }
