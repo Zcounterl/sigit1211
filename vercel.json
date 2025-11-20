@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "name": "sigit1211",
+  "public": true,
+  "builds": [
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "env": {
+    "FORCE_UPDATE_ID": "1763650482"
+  }
+}
