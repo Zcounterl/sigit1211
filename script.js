@@ -751,34 +751,80 @@ window.toggleCommentSection = () => { const c = document.getElementById('comment
 window.deleteContent = () => { if(confirm("Hapus Permanen?")) { remove(ref(rtdb, `${curCollection}/${curItem.id}`)); document.getElementById('detail-modal').classList.add('hidden'); Swal.fire("Terhapus","","success"); } }
 window.toggleLike = () => { const k=`liked_${curItem.id}`; const r=ref(rtdb,`posts/${curItem.id}/likes`); if(localStorage.getItem(k)) { runTransaction(r,v=>(v||0)-1); localStorage.removeItem(k); document.getElementById('modal-heart').className="far fa-heart text-xl"; } else { runTransaction(r,v=>(v||0)+1); localStorage.setItem(k,'1'); document.getElementById('modal-heart').className="fas fa-heart text-red-500 text-xl like-active"; } }
 
-// --- MODERN MUSIC PLAYER (DYNAMIC ISLAND) ---
-// GANTI FUNGSI playMusic DENGAN INI:
+// --- MODERN MUSIC PLAYER LOGIC (V2 - CYBERPUNK) ---
+
+let musicInterval; // Variabel timer untuk progress bar
+
 window.playMusic = (src, t, a, type) => { 
     const p = document.getElementById('sticky-player');
     
-    // Update tampilan Player (Dan sertakan <audio> di dalamnya agar tidak hilang)
+    // Render HTML Baru (Sesuai CSS Cyberpunk yang baru dipasang)
     p.innerHTML = `
+        <div class="player-progress" id="music-progress"></div>
+        
         <img src="https://cdn-icons-png.flaticon.com/512/3844/3844724.png" class="music-cover-spin">
+        
         <div class="music-info">
-            <div class="music-title">${t}</div>
+            <div style="overflow:hidden; white-space:nowrap;">
+                <div class="${t.length > 20 ? 'marquee' : ''} music-title">${t}</div>
+            </div>
             <div class="music-artist">${a}</div>
         </div>
+        
         <div class="visualizer playing">
-            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
         </div>
+        
         <button onclick="togglePlay()" class="btn-play-modern"><i id="sp-icon" class="fas fa-pause"></i></button>
-        <button onclick="closePlayer()" class="text-gray-500 hover:text-white ml-2"><i class="fas fa-times"></i></button>
+        <button onclick="closePlayer()" class="btn-close-player"><i class="fas fa-times"></i></button>
+        
         <audio id="audio-element" class="hidden"></audio> 
     `;
     
     p.classList.add('active'); 
     
-    // Ambil elemen audio SETELAH dibuat ulang oleh innerHTML di atas
     const aud = document.getElementById('audio-element');
     if(aud) {
         aud.src = src; 
-        aud.play().catch(e => showGameToast("Gagal memutar audio", "error")); 
+        aud.play().catch(e => showGameToast("Gagal play: " + e.message, "error"));
+        
+        // Jalankan Animasi Progress Bar
+        if(musicInterval) clearInterval(musicInterval);
+        musicInterval = setInterval(() => {
+            const prog = document.getElementById('music-progress');
+            if(aud.duration && prog) {
+                const pct = (aud.currentTime / aud.duration) * 100;
+                prog.style.width = `${pct}%`;
+            }
+        }, 500);
     }
+}
+
+window.togglePlay = () => { 
+    const a = document.getElementById('audio-element'); 
+    const viz = document.querySelector('.visualizer');
+    const cov = document.querySelector('.music-cover-spin');
+    
+    if(!a) return;
+
+    if(a.paused) { 
+        a.play(); 
+        document.getElementById('sp-icon').className="fas fa-pause"; 
+        if(viz) { viz.classList.remove('paused'); viz.classList.add('playing'); }
+        if(cov) cov.classList.remove('paused');
+    } else { 
+        a.pause(); 
+        document.getElementById('sp-icon').className="fas fa-play ml-1"; 
+        if(viz) { viz.classList.remove('playing'); viz.classList.add('paused'); }
+        if(cov) cov.classList.add('paused');
+    } 
+}
+
+window.closePlayer = () => { 
+    const a = document.getElementById('audio-element');
+    if(a) a.pause(); 
+    if(musicInterval) clearInterval(musicInterval); // Matikan timer biar hemat memori
+    document.getElementById('sticky-player').classList.remove('active'); 
 }
 window.togglePlay = () => { const a=document.getElementById('audio-element'), viz = document.querySelector('.visualizer'), cov = document.querySelector('.music-cover-spin'); if(a.paused) { a.play(); document.getElementById('sp-icon').className="fas fa-pause"; if(viz) { viz.classList.remove('paused'); viz.classList.add('playing'); } if(cov) cov.classList.remove('paused'); } else { a.pause(); document.getElementById('sp-icon').className="fas fa-play"; if(viz) { viz.classList.remove('playing'); viz.classList.add('paused'); } if(cov) cov.classList.add('paused'); } }
 window.closePlayer = () => { document.getElementById('audio-element').pause(); document.getElementById('sticky-player').classList.remove('active'); }
