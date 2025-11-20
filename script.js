@@ -953,23 +953,66 @@ window.navigateTo = (p) => {
 window.sharePostLink = () => { if(!curItem) return; const link = `${window.location.origin}${window.location.pathname}?v=${curCollection}&id=${curItem.id}`; navigator.clipboard.writeText(link).then(() => Swal.fire({icon:'success',title:'Link Disalin!',timer:1500,showConfirmButton:false})); const refShare = ref(rtdb, `posts/${curItem.id}/shares`); runTransaction(refShare, (v) => (v || 0) + 1); }
 window.checkDeepLink = async () => { const params = new URLSearchParams(window.location.search); const pId = params.get('id'); const pCol = params.get('v'); if (pId && pCol) { window.history.replaceState({}, document.title, window.location.pathname); try { const snap = await get(ref(rtdb, `${pCol}/${pId}`)); if (snap.exists()) { const item = {id: pId, ...snap.val()}; openDetail(item, pCol); } else { showGameToast("Postingan tidak ditemukan.", "error"); } } catch (e) { console.error(e); } } }
 
+// --- INSTAGRAM COMMENT RENDERER ---
 window.loadComments = (postId) => { 
-    if(!postId) return; 
+    if(!postId) return;
     const list = document.getElementById('comments-list'); 
+    
+    // Loading State
+    list.innerHTML = '<div class="text-center text-gray-500 text-xs py-4">Memuat komentar...</div>';
+
     const refComm = ref(rtdb, `interactions/comments/${postId}`); 
     onValue(refComm, (snap) => { 
         list.innerHTML = ''; 
         const data = snap.val(); 
+        
         if (!data) { 
-            list.innerHTML = '<div class="text-center text-gray-500 text-xs mt-2">Belum ada komentar.</div>'; 
+            list.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10 text-center opacity-50">
+                    <i class="far fa-comment text-4xl mb-2"></i>
+                    <p class="text-xs">Jadilah yang pertama berkomentar.</p>
+                </div>
+            `; 
             document.getElementById('modal-comments-count').innerText = "0"; 
             return; 
         } 
+        
         document.getElementById('modal-comments-count').innerText = Object.keys(data).length; 
+        
         Object.values(data).forEach(c => { 
             const isMe = c.username === user.username; 
-            const delBtn = isMe || user.role === 'developer' ? `<button onclick="delComment('${postId}','${c.id}')" class="ml-2 text-[10px] text-gray-500 hover:text-red-500"><i class="fas fa-trash"></i></button>` : ''; 
-            const html = `<div class="flex gap-3 items-start group"><img src="${c.pic}" class="w-8 h-8 rounded-full bg-gray-800 object-cover flex-shrink-0"><div class="flex-1"><div class="text-sm text-white"><span class="font-bold mr-1 cursor-pointer hover:text-gray-300">${c.username}</span><span class="font-light text-gray-200">${c.text}</span></div><div class="flex gap-3 mt-1 text-[10px] text-gray-400 font-bold"><span>${moment(c.timestamp).fromNow(true)}</span><button class="hover:text-white" onclick="document.getElementById('comment-input').value='@${c.username} '; document.getElementById('comment-input').focus();">Balas</button>${delBtn}</div></div><button class="text-xs text-gray-500 hover:text-red-500 pt-1"><i class="far fa-heart"></i></button></div>`; 
+            // Fallback Foto Profil jika kosong
+            const userPic = c.pic || `https://ui-avatars.com/api/?name=${c.username}&background=random`;
+            const timeAgo = moment(c.timestamp).fromNow(true).replace("hours", "j").replace("minutes", "m").replace("days", "h"); // Singkatan waktu ala IG
+
+            // Tombol Hapus (hanya muncul jika punya sendiri atau developer)
+            const delBtn = isMe || user.role === 'developer' 
+                ? `<span onclick="delComment('${postId}','${c.id}')" class="ml-3 cursor-pointer hover:text-red-500 text-[10px]">Hapus</span>` 
+                : ''; 
+
+            // HTML Struktur Mirip IG
+            const html = `
+                <div class="comment-item group">
+                    <img src="${userPic}" class="comment-avatar">
+                    
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-username">${c.username}</span>
+                            <span class="comment-text">${c.text}</span>
+                        </div>
+                        
+                        <div class="comment-meta">
+                            <span>${timeAgo}</span>
+                            <span class="comment-reply-btn" onclick="document.getElementById('comment-input').value='@${c.username} '; document.getElementById('comment-input').focus();">Balas</span>
+                            ${delBtn}
+                        </div>
+                    </div>
+                    
+                    <div class="comment-like-btn hover:scale-110 transition">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+            `; 
             list.innerHTML += html; 
         }); 
     }); 
