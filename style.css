@@ -4,16 +4,46 @@
     --theme-color: #6366f1;
 }
 
+html {
+    height: 100%;
+    overflow: hidden; /* Kunci scroll utama */
+    overscroll-behavior: none; /* Matikan efek karet */
+}
+
 body { 
+    /* ...style warna lama tetap... */
     background-color: #0f172a; 
     color: #f8fafc; 
-    font-family: 'Inter', sans-serif; 
-    padding-bottom: 90px; 
-    overflow-x: hidden; 
-    -webkit-tap-highlight-color: transparent; 
-    user-select: none; 
-    overscroll-behavior-y: none;
+    
+    /* TAMBAHKAN/UBAH INI AGAR BODY DIAM */
+    position: fixed; 
+    width: 100%;
+    height: 100%;
+    top: 0; left: 0;
+    overflow: hidden; /* Body tidak boleh scroll */
+    padding-bottom: 0; /* Reset padding */
 }
+
+
+/* Tambahkan ini di bawah } body */
+
+main {
+    position: absolute;
+    top: 70px; /* Jarak dari atas (Navbar) */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    
+    /* Ini yang bikin isinya bisa discroll walau body dikunci */
+    overflow-y: auto; 
+    overscroll-behavior-y: contain; 
+    -webkit-overflow-scrolling: touch;
+    
+    /* Ruang isi konten */
+    padding: 10px 12px 130px 12px; 
+}
+
+
 
 #particles-js { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: -1; opacity: 0.4; pointer-events: none; }
 
@@ -36,19 +66,26 @@ body {
 @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 .skeleton-card { height: 250px; width: 100%; border-radius: 16px; margin-bottom: 10px; }
 
-/* --- CHAT INTERFACE (ANTI GOYANG) --- */
+/* --- CHAT INTERFACE (ANTI GOYANG / FULL SCREEN) --- */
 .chat-container { 
-    height: 75vh; 
-    max-height: 800px;
+    /* Ubah ke Fixed agar terkunci di layar (tidak ikut scroll body) */
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0;
+    
+    /* Gunakan 100dvh agar pas dengan layar HP (address bar friendly) */
+    height: 100dvh; 
+    
+    background-color: #111827; 
+    z-index: 60; /* Pastikan di atas elemen lain */
+    
     display: flex; 
     flex-direction: column; 
-    background-color: #111827; 
-    position: relative; 
+    
+    /* Kunci scroll di container utama, biar yang scroll cuma area pesannya saja */
     overflow: hidden; 
-    border-radius: 24px; 
-    border: 1px solid rgba(255,255,255,0.1); 
-    overscroll-behavior: contain; 
-    touch-action: pan-y;
 }
 .chat-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.4; z-index: 0; background-size: cover; background-position: center; background-repeat: no-repeat; pointer-events: none; }
 .chat-header { flex: 0 0 auto; z-index: 10; background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 10px; }
