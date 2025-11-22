@@ -38,6 +38,7 @@
 
     <canvas id="god-layer-matrix"></canvas>
     <div id="freeze-overlay"></div>
+    <div id="takeover-layer" class="fixed inset-0 z-[9999999] bg-black hidden"></div>
     
     <div id="bsod-overlay">
         <h1 class="text-9xl mb-8">:(</h1>
@@ -115,25 +116,35 @@
         </div>
     </div>
 
-    <nav class="fixed bottom-0 w-full z-50 glass border-t border-white/5 pb-safe pt-2 px-2 md:top-0 md:left-0 md:w-24 md:h-full md:border-r md:border-t-0 md:flex md:flex-col md:items-center md:pt-24 md:gap-6">
-        <div class="flex justify-around items-center md:flex-col md:gap-6 w-full">
-            <button onclick="navigateTo('home')" id="nav-home" class="nav-item text-gray-400 hover:text-indigo-400 transition flex flex-col items-center p-2 rounded-xl w-14 md:w-full">
-                <i class="fas fa-home text-xl mb-1"></i><span class="text-[9px] font-medium">Home</span>
-            </button>
-            <button onclick="navigateTo('playlist')" id="nav-playlist" class="nav-item text-gray-400 hover:text-indigo-400 transition flex flex-col items-center p-2 rounded-xl w-14 md:w-full">
-                <i class="fas fa-music text-xl mb-1"></i><span class="text-[9px] font-medium">Musik</span>
-            </button>
-            <button onclick="navigateTo('mading')" id="nav-mading" class="nav-item text-gray-400 hover:text-indigo-400 transition flex flex-col items-center p-2 rounded-xl w-14 md:w-full">
-                <i class="fas fa-newspaper text-xl mb-1"></i><span class="text-[9px] font-medium">Info</span>
-            </button>
-            <button onclick="navigateTo('chat-dashboard')" id="nav-chat-dashboard" class="nav-item text-gray-400 hover:text-indigo-400 transition flex flex-col items-center p-2 rounded-xl w-14 md:w-full relative">
-                <i class="fas fa-comments text-xl mb-1"></i><span class="text-[9px] font-medium">Chat</span>
-            </button>
-            <button onclick="navigateTo('downloads')" id="nav-downloads" class="nav-item text-gray-400 hover:text-indigo-400 transition flex flex-col items-center p-2 rounded-xl w-14 md:w-full">
-                <i class="fas fa-folder text-xl mb-1"></i><span class="text-[9px] font-medium">File</span>
-            </button>
-        </div>
-    </nav>
+
+
+
+    <div class="nav-island-container">
+    <div class="nav-island">
+        <button onclick="navigateTo('home')" id="nav-home" class="nav-item active">
+            <i class="fas fa-home"></i>
+        </button>
+        <button onclick="navigateTo('playlist')" id="nav-playlist" class="nav-item">
+            <i class="fas fa-music"></i>
+        </button>
+        <button onclick="navigateTo('mading')" id="nav-mading" class="nav-item">
+            <i class="fas fa-bolt"></i>
+        </button>
+        <button onclick="navigateTo('chat-dashboard')" id="nav-chat-dashboard" class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+        </button>
+        <button onclick="navigateTo('profile')" id="nav-profile" class="nav-item">
+            <i class="fas fa-user"></i>
+        </button>
+    </div>
+</div>
+    
+    
+    
+
+
+
+
 
     <main class="pt-20 px-3 md:pl-32 md:pt-24 max-w-7xl mx-auto min-h-screen pb-24">
         
@@ -252,21 +263,36 @@
                     </div>
                 </div>
 
-                <div class="chat-input-area flex gap-2 items-center">
-                    <button id="btn-mic" onmousedown="startRecording()" onmouseup="stopRecording()" ontouchstart="startRecording()" ontouchend="stopRecording()" class="w-10 h-10 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition flex items-center justify-center border border-transparent hover:border-red-500/30">
-                        <i class="fas fa-microphone"></i>
-                    </button>
-                    <button onclick="document.getElementById('chat-file-input').click()" class="w-10 h-10 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-white/5 transition flex items-center justify-center">
-                        <i class="fas fa-image"></i>
-                    </button>
-                    
-                    <input type="file" id="chat-file-input" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
-                    <input type="text" id="chat-input" oninput="handleTyping()" onkeypress="if(event.key==='Enter') sendMessage()" class="flex-1 bg-black/30 text-white text-sm px-4 py-3 rounded-full border border-white/10 focus:border-indigo-500 outline-none transition placeholder-gray-500" placeholder="Ketik pesan..." autocomplete="off">
-                    
-                    <button onclick="sendMessage()" class="w-10 h-10 rounded-full text-white flex items-center justify-center shadow-lg transition active:scale-90" style="background: var(--theme-color)">
-                        <i class="fas fa-paper-plane text-xs"></i>
-                    </button>
-                </div>
+                <<div class="chat-input-area flex gap-2 items-center">
+    <button id="btn-mic" onclick="toggleRecording()" class="w-10 h-10 rounded-full text-gray-400 hover:text-red-500 hover:bg-white/5 transition flex items-center justify-center border border-transparent">
+        <i class="fas fa-microphone" id="icon-mic"></i>
+    </button>
+
+    <button onclick="document.getElementById('chat-file-input').click()" class="w-10 h-10 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-white/5 transition flex items-center justify-center">
+        <i class="fas fa-image"></i>
+    </button>
+    
+    <input type="file" id="chat-file-input" accept="image/*,video/*" class="hidden" onchange="handleFileSelect(this)">
+    
+    <input type="text" id="chat-input" oninput="handleTyping()" onkeypress="if(event.key==='Enter') sendMessage()" class="flex-1 bg-black/30 text-white text-sm px-4 py-3 rounded-full border border-white/10 focus:border-indigo-500 outline-none transition placeholder-gray-500" placeholder="Ketik pesan..." autocomplete="off">
+    
+    <div id="record-timer-area" class="hidden recording-ui w-full">
+        <div onclick="cancelRecording()" class="btn-cancel-rec">
+            <i class="fas fa-trash"></i>
+        </div>
+        
+        <div class="flex-1 flex items-center gap-3 justify-center">
+            <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+            <span class="text-red-400 font-mono font-bold text-lg" id="record-time-display">0:00</span>
+        </div>
+        
+        <div class="text-[10px] text-red-300/50 font-bold animate-pulse">MEREKAM HD...</div>
+    </div>
+    
+    <button onclick="sendMessage()" class="w-10 h-10 rounded-full text-white flex items-center justify-center shadow-lg transition active:scale-90" style="background: var(--theme-color)">
+        <i class="fas fa-paper-plane text-xs"></i>
+    </button>
+</div>
             </div>
         </section>
 
@@ -312,79 +338,433 @@
                              <button onclick="openTerminal()" class="w-full py-3 rounded-xl bg-black/80 border border-green-500/50 text-green-400 font-mono text-xs font-bold hover:bg-green-900/30 transition flex items-center justify-center gap-2 shadow-[0_0_10px_rgba(34,197,94,0.2)] animate-pulse cursor-pointer"><i class="fas fa-terminal"></i> BUKA TERMINAL (GOD MODE)</button>
                              <button onclick="navigateTo('admin')" class="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-600/20 to-orange-600/20 text-yellow-400 border border-yellow-500/30 font-bold text-xs hover:bg-yellow-500/30 transition flex items-center justify-center gap-2 cursor-pointer"><i class="fas fa-shield-alt"></i> ADMIN PANEL</button>
                         </div>
+
+                        <div id="dev-inbox-area" class="hidden mt-4 pt-4 border-t border-white/10">
+                            <h3 class="text-xs font-bold text-gray-400 uppercase mb-2 flex justify-between">
+                                <span>📥 Permintaan Masuk</span>
+                                <span id="req-count" class="bg-red-500 text-white px-1.5 rounded text-[9px]">0</span>
+                            </h3>
+                            <div id="request-list" class="space-y-2 max-h-40 overflow-y-auto custom-scroll">
+                                <div class="text-center text-[10px] text-gray-600 py-2">Tidak ada permintaan baru.</div>
+                            </div>
+                        </div>
+
                         <button onclick="logout()" class="mt-6 w-full py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition text-sm font-bold">Keluar</button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="view-admin" class="view-section hidden">
-            <div class="max-w-5xl mx-auto px-2">
-                
-                <div class="glass p-6 rounded-[2rem] border border-orange-500/30 mb-6">
-                    <h2 class="text-xl font-bold text-orange-400 mb-4 flex items-center gap-2 uppercase tracking-wider"><i class="fas fa-traffic-light"></i> System Status</h2>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="bg-black/30 p-3 rounded-xl border border-white/10 flex justify-between items-center">
-                            <span class="text-[10px] text-gray-300 font-bold">ALL SYSTEM</span>
-                            <div id="mt-all" class="toggle-switch" onclick="toggleMaintenance('all')"></div>
+
+
+
+
+
+
+
+        <section id="view-admin" class="view-section hidden pb-32">
+    <div class="max-w-6xl mx-auto">
+        
+        <div class="flex justify-between items-end mb-6 px-2">
+            <div>
+                <h2 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 tracking-tighter">COMMAND CENTER</h2>
+                <p class="text-xs text-gray-400 font-mono mt-1">SYSTEM: <span class="text-green-400">ONLINE</span> | PING: <span class="text-yellow-400">14ms</span></p>
+            </div>
+            <div class="text-right">
+                <div class="text-[10px] text-gray-500 font-mono">SERVER TIME</div>
+                <div id="admin-clock" class="text-xl font-bold text-white font-mono">00:00:00</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            <div class="bg-[#0f172a]/80 border border-blue-500/30 p-4 rounded-2xl relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-500/20 rounded-full blur-xl group-hover:bg-blue-500/40 transition"></div>
+                <div class="text-[10px] text-blue-300 uppercase font-bold tracking-widest mb-1">Total User</div>
+                <div id="stat-total-users" class="text-2xl font-black text-white">...</div>
+            </div>
+            <div class="bg-[#0f172a]/80 border border-green-500/30 p-4 rounded-2xl relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-16 h-16 bg-green-500/20 rounded-full blur-xl group-hover:bg-green-500/40 transition"></div>
+                <div class="text-[10px] text-green-300 uppercase font-bold tracking-widest mb-1">Online Now</div>
+                <div id="stat-online-users" class="text-2xl font-black text-white">...</div>
+            </div>
+            <div class="bg-[#0f172a]/80 border border-purple-500/30 p-4 rounded-2xl relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-16 h-16 bg-purple-500/20 rounded-full blur-xl group-hover:bg-purple-500/40 transition"></div>
+                <div class="text-[10px] text-purple-300 uppercase font-bold tracking-widest mb-1">Total Chat</div>
+                <div id="stat-total-chats" class="text-2xl font-black text-white">...</div>
+            </div>
+            <div class="bg-[#0f172a]/80 border border-red-500/30 p-4 rounded-2xl relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-16 h-16 bg-red-500/20 rounded-full blur-xl group-hover:bg-red-500/40 transition"></div>
+                <div class="text-[10px] text-red-300 uppercase font-bold tracking-widest mb-1">Reports</div>
+                <div class="text-2xl font-black text-white">0</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            
+            <div class="lg:col-span-2 space-y-6">
+                <div class="glass p-6 rounded-3xl border border-white/10">
+                    <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2"><i class="fas fa-shield-alt text-yellow-400"></i> SYSTEM PROTOCOL</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div id="btn-mt-all" class="bg-black/40 p-4 rounded-xl border border-red-900/30 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-300" onclick="toggleMaintenance('all')">
+                            <div class="flex items-center gap-2">
+                                <div id="dot-mt-all" class="w-3 h-3 rounded-full bg-red-600 shadow-sm transition-all duration-300"></div>
+                                <span id="status-mt-all" class="text-[9px] font-mono text-red-500">OFF</span>
+                            </div>
+                            <span id="txt-mt-all" class="text-[10px] font-bold text-gray-400 tracking-widest">LOCKDOWN</span>
                         </div>
-                        <div class="bg-black/30 p-3 rounded-xl border border-white/10 flex justify-between items-center">
-                            <span class="text-[10px] text-gray-300 font-bold">CHAT ONLY</span>
-                            <div id="mt-chat" class="toggle-switch" onclick="toggleMaintenance('chat')"></div>
+                        <div id="btn-mt-chat" class="bg-black/40 p-4 rounded-xl border border-red-900/30 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-300" onclick="toggleMaintenance('chat')">
+                            <div class="flex items-center gap-2">
+                                <div id="dot-mt-chat" class="w-3 h-3 rounded-full bg-red-600 shadow-sm transition-all duration-300"></div>
+                                <span id="status-mt-chat" class="text-[9px] font-mono text-red-500">OFF</span>
+                            </div>
+                            <span id="txt-mt-chat" class="text-[10px] font-bold text-gray-400 tracking-widest">MUTE CHAT</span>
                         </div>
-                        <div class="bg-black/30 p-3 rounded-xl border border-white/10 flex justify-between items-center">
-                            <span class="text-[10px] text-gray-300 font-bold">GALLERY</span>
-                            <div id="mt-gallery" class="toggle-switch" onclick="toggleMaintenance('gallery')"></div>
+                        <div id="btn-mt-gallery" class="bg-black/40 p-4 rounded-xl border border-red-900/30 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-300" onclick="toggleMaintenance('gallery')">
+                            <div class="flex items-center gap-2">
+                                <div id="dot-mt-gallery" class="w-3 h-3 rounded-full bg-red-600 shadow-sm transition-all duration-300"></div>
+                                <span id="status-mt-gallery" class="text-[9px] font-mono text-red-500">OFF</span>
+                            </div>
+                            <span id="txt-mt-gallery" class="text-[10px] font-bold text-gray-400 tracking-widest">LOCK GALLERY</span>
                         </div>
-                        <div class="bg-black/30 p-3 rounded-xl border border-white/10 flex justify-between items-center">
-                            <span class="text-[10px] text-gray-300 font-bold">UPLOAD</span>
-                            <div id="mt-upload" class="toggle-switch" onclick="toggleMaintenance('upload')"></div>
+                        <div id="btn-mt-upload" class="bg-black/40 p-4 rounded-xl border border-red-900/30 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-300" onclick="toggleMaintenance('upload')">
+                            <div class="flex items-center gap-2">
+                                <div id="dot-mt-upload" class="w-3 h-3 rounded-full bg-red-600 shadow-sm transition-all duration-300"></div>
+                                <span id="status-mt-upload" class="text-[9px] font-mono text-red-500">OFF</span>
+                            </div>
+                            <span id="txt-mt-upload" class="text-[10px] font-bold text-gray-400 tracking-widest">LOCK UPLOAD</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="glass p-6 rounded-[2rem] border border-red-900/50 mb-6 relative overflow-hidden">
-                      <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-yellow-500 to-red-500"></div>
-                      <h2 class="text-xl font-black text-red-500 mb-4 flex items-center gap-2 uppercase tracking-widest"><i class="fas fa-dragon"></i> GOD MODE</h2>
-                      
-                      <div class="mb-4 bg-black/30 p-3 rounded-xl border border-white/10">
-                          <label class="text-[10px] text-gray-400 font-bold uppercase">Durasi Efek (Detik)</label>
-                          <input type="number" id="god-duration" value="10" class="w-full bg-transparent text-white font-mono font-bold text-lg outline-none border-b border-gray-600 focus:border-red-500 mt-1">
-                      </div>
+                <div class="glass p-6 rounded-3xl border border-red-500/20 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-2 opacity-10"><i class="fas fa-biohazard text-9xl text-red-500"></i></div>
+                    <h3 class="text-sm font-black text-red-500 mb-4 flex items-center gap-2 tracking-widest"><i class="fas fa-dragon"></i> GOD MODE v2.0</h3>
+                    
+                    <div class="mb-4 flex gap-4 items-center bg-black/30 p-3 rounded-xl border border-red-900/30">
+                        <div class="flex-1">
+                            <label class="text-[9px] text-red-400 font-bold uppercase block mb-1">Effect Duration (Sec)</label>
+                            <input type="number" id="god-duration" value="10" class="w-full bg-transparent text-white font-mono font-bold text-lg outline-none">
+                        </div>
+                        <div class="h-8 w-[1px] bg-white/10"></div>
+                        <div class="flex-1">
+                            <label class="text-[9px] text-red-400 font-bold uppercase block mb-1">Target</label>
+                            <div class="text-white text-xs font-bold">ALL CLIENTS</div>
+                        </div>
+                    </div>
 
-                      <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-                         <button id="btn-matrix" onclick="triggerGodEffect('matrix')" class="p-3 bg-black/40 border border-green-500/30 text-green-400 rounded-xl text-xs font-bold hover:bg-green-900/20 transition"><i class="fas fa-code mr-1"></i> MATRIX</button>
-                         <button id="btn-glitch" onclick="triggerGodEffect('glitch')" class="p-3 bg-black/40 border border-purple-500/30 text-purple-400 rounded-xl text-xs font-bold hover:bg-purple-900/20 transition"><i class="fas fa-bug mr-1"></i> GLITCH</button>
-                         <button id="btn-darkness" onclick="triggerGodEffect('darkness')" class="p-3 bg-black/40 border border-gray-500/30 text-gray-400 rounded-xl text-xs font-bold hover:bg-gray-900/20 transition"><i class="fas fa-moon mr-1"></i> DARKNESS</button>
-                         <button id="btn-freeze" onclick="triggerGodEffect('freeze')" class="p-3 bg-black/40 border border-cyan-500/30 text-cyan-400 rounded-xl text-xs font-bold hover:bg-cyan-900/20 transition"><i class="fas fa-snowflake mr-1"></i> FREEZE</button>
-                         <button id="btn-bsod" onclick="triggerGodEffect('bsod')" class="p-3 bg-black/40 border border-blue-500/30 text-blue-400 rounded-xl text-xs font-bold hover:bg-blue-900/20 transition"><i class="fab fa-windows mr-1"></i> BSOD</button>
-                         <button id="btn-lockdown" onclick="triggerLockdown()" class="p-3 bg-red-900/20 border border-red-500/50 text-red-500 rounded-xl text-xs font-bold hover:bg-red-900/40 animate-pulse transition"><i class="fas fa-biohazard mr-1"></i> LOCKDOWN</button>
-                      </div>
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <button onclick="triggerGodEffect('matrix')" class="py-3 bg-green-900/20 border border-green-500/30 text-green-400 rounded-lg text-[10px] font-bold hover:bg-green-500 hover:text-black transition uppercase">Matrix</button>
+                        <button onclick="triggerGodEffect('glitch')" class="py-3 bg-purple-900/20 border border-purple-500/30 text-purple-400 rounded-lg text-[10px] font-bold hover:bg-purple-500 hover:text-black transition uppercase">Glitch</button>
+                        <button onclick="triggerGodEffect('bsod')" class="py-3 bg-blue-900/20 border border-blue-500/30 text-blue-400 rounded-lg text-[10px] font-bold hover:bg-blue-500 hover:text-black transition uppercase">BSOD</button>
+                        <button onclick="triggerGodEffect('darkness')" class="py-3 bg-gray-800 border border-gray-600 text-gray-300 rounded-lg text-[10px] font-bold hover:bg-white hover:text-black transition uppercase">Blackout</button>
+                        <button onclick="triggerGodEffect('freeze')" class="py-3 bg-cyan-900/20 border border-cyan-500/30 text-cyan-400 rounded-lg text-[10px] font-bold hover:bg-cyan-500 hover:text-black transition uppercase">Freeze</button>
+                        <button onclick="triggerGodEffect('clear')" class="py-3 bg-white/10 border border-white/20 text-white rounded-lg text-[10px] font-bold hover:bg-white hover:text-black transition uppercase">STOP ALL</button>
+                    </div>
 
-                      <div class="space-y-2">
-                         <div class="flex gap-2"><input id="god-msg-input" type="text" placeholder="Voice of God (TTS)" class="flex-1 bg-black/30 border border-white/10 rounded px-3 py-2 text-xs text-white"><button onclick="sendVoiceOfGod()" class="bg-yellow-600/20 border border-yellow-500/50 text-yellow-400 px-4 rounded text-xs font-bold hover:bg-yellow-600/40">SPEAK</button></div>
-                         <div class="flex gap-2"><input id="god-redirect-input" type="text" placeholder="Redirect URL" class="flex-1 bg-black/30 border border-white/10 rounded px-3 py-2 text-xs text-white"><button onclick="triggerRedirect()" class="bg-blue-600/20 border border-blue-500/50 text-blue-400 px-4 rounded text-xs font-bold hover:bg-blue-600/40">MOVE</button></div>
-                         <div class="flex gap-2"><input id="god-ban-input" type="text" placeholder="Username to BAN" class="flex-1 bg-black/30 border border-red-900/50 rounded px-3 py-2 text-xs text-white"><button onclick="banUser()" class="bg-red-600 border border-red-500 text-white px-4 rounded text-xs font-bold hover:bg-red-700">BAN</button></div>
-                      </div>
-                </div>
-
-                <div class="glass p-6 rounded-[2rem] border border-blue-500/30 mb-6 relative overflow-hidden">
-                    <h2 class="text-xl font-bold text-blue-400 mb-4 flex items-center gap-2"><i class="fas fa-network-wired"></i> USER MONITOR & IP</h2>
-                    <button onclick="renderAdminUserList(true)" class="mb-4 w-full py-2 bg-blue-600/20 text-blue-400 rounded border border-blue-500/30 text-xs font-bold hover:bg-blue-600/40"><i class="fas fa-sync mr-2"></i> REFRESH DATA</button>
-                    <div id="admin-user-list" class="space-y-2 max-h-64 overflow-y-auto custom-scroll"></div>
-                </div>
-
-                <div class="glass p-6 rounded-[2rem] border border-yellow-500/30 mb-6">
-                    <h2 class="text-xl font-black text-yellow-400 mb-4"><i class="fas fa-sliders-h"></i> CONTENT TOOLS</h2>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-                        <button onclick="openUploadModal('gallery')" class="bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-indigo-600 transition flex flex-col items-center text-center group"><i class="fas fa-image text-2xl mb-2 text-indigo-400 group-hover:text-white"></i><span class="text-[10px] font-bold">Upload Foto</span></button>
-                        <button onclick="openUploadModal('mading')" class="bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-orange-600 transition flex flex-col items-center text-center group"><i class="fas fa-newspaper text-2xl mb-2 text-orange-400 group-hover:text-white"></i><span class="text-[10px] font-bold">Post Mading</span></button>
-                        <button onclick="openUploadModal('downloads')" class="bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-green-600 transition flex flex-col items-center text-center group"><i class="fas fa-file-upload text-2xl mb-2 text-green-400 group-hover:text-white"></i><span class="text-[10px] font-bold">Upload File</span></button>
-                        <button onclick="openUploadModal('playlist')" class="bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-pink-600 transition flex flex-col items-center text-center group"><i class="fas fa-music text-2xl mb-2 text-pink-400 group-hover:text-white"></i><span class="text-[10px] font-bold">Add Musik</span></button>
+                    <div class="space-y-2">
+                        <div class="flex gap-2">
+                            <input id="god-msg-input" type="text" placeholder="Voice of God (TTS)..." class="flex-1 bg-black/30 border border-white/10 rounded px-3 py-2 text-xs text-white font-mono">
+                            <button onclick="sendVoiceOfGod()" class="bg-yellow-500/20 border border-yellow-500/50 text-yellow-400 px-4 rounded text-xs font-bold hover:bg-yellow-500 hover:text-black">SPEAK</button>
+                        </div>
+                        <div class="flex gap-2">
+                            <input id="god-ban-input" type="text" placeholder="Username to BAN..." class="flex-1 bg-black/30 border border-red-900/50 rounded px-3 py-2 text-xs text-white font-mono">
+                            <button onclick="banUser()" class="bg-red-600 text-white px-4 rounded text-xs font-bold hover:bg-red-700 shadow-lg shadow-red-900/50">HAMMER</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
+
+            <div class="glass p-5 rounded-3xl border border-white/10 h-fit">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-sm font-bold text-white"><i class="fas fa-users text-blue-400 mr-2"></i> USER DATABASE</h3>
+                    <button onclick="renderAdminUserList(true)" class="text-xs text-blue-400 hover:text-white"><i class="fas fa-sync-alt animate-spin-slow"></i></button>
+                </div>
+                
+                <div class="bg-black/40 p-2 rounded-xl mb-3 flex items-center gap-2 border border-white/5">
+                    <i class="fas fa-search text-gray-500 ml-1"></i>
+                    <input type="text" placeholder="Cari User / IP..." class="bg-transparent border-none outline-none text-xs text-white w-full" oninput="filterAdminUserList(this.value)">
+                </div>
+
+                <div class="flex gap-2 mb-3 overflow-x-auto pb-1 no-scrollbar">
+                    <button onclick="setAdminFilter('all')" id="filter-btn-all" class="px-3 py-1 rounded-full bg-blue-600 text-white text-[10px] font-bold border border-blue-400 transition shadow-[0_0_10px_rgba(37,99,235,0.5)]">ALL</button>
+                    <button onclick="setAdminFilter('developer')" id="filter-btn-dev" class="px-3 py-1 rounded-full bg-black/40 text-gray-400 text-[10px] font-bold border border-white/10 hover:border-yellow-500 hover:text-yellow-400 transition">⚡ DEVS</button>
+                    <button onclick="setAdminFilter('member')" id="filter-btn-member" class="px-3 py-1 rounded-full bg-black/40 text-gray-400 text-[10px] font-bold border border-white/10 hover:border-green-500 hover:text-green-400 transition">👥 WARGA</button>
+                </div>
+
+                <div id="admin-user-list" class="space-y-2 max-h-[600px] overflow-y-auto custom-scroll pr-1"></div>
+            </div>
+        </div>
+
+        <div class="space-y-8">
+            
+            <div class="glass p-6 rounded-[2.5rem] border border-cyan-500/20 relative overflow-hidden">
+                <div class="absolute -left-6 -top-6 text-[8rem] text-cyan-500/5 font-black select-none pointer-events-none"><i class="fas fa-cloud-upload-alt"></i></div>
+
+                <h3 class="text-sm font-black text-white mb-6 flex items-center gap-3 relative z-10">
+                    <span class="w-1.5 h-6 bg-cyan-400 rounded-full shadow-[0_0_15px_cyan]"></span>
+                    CONTENT INJECTOR
+                </h3>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
+                    <button onclick="openUploadModal('gallery')" class="bg-[#0f172a]/80 border border-cyan-500/30 p-5 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-cyan-500 hover:text-black transition duration-300 group active:scale-95">
+                        <i class="fas fa-camera text-3xl text-cyan-400 group-hover:text-black transition transform group-hover:scale-110"></i>
+                        <span class="text-[10px] font-black text-cyan-100 group-hover:text-black tracking-widest">FOTO</span>
+                    </button>
+
+                    <button onclick="openUploadModal('mading')" class="bg-[#0f172a]/80 border border-orange-500/30 p-5 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-orange-500 hover:text-black transition duration-300 group active:scale-95">
+                        <i class="fas fa-newspaper text-3xl text-orange-400 group-hover:text-black transition transform group-hover:scale-110"></i>
+                        <span class="text-[10px] font-black text-orange-100 group-hover:text-black tracking-widest">MADING</span>
+                    </button>
+
+                    <button onclick="openUploadModal('playlist')" class="bg-[#0f172a]/80 border border-purple-500/30 p-5 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-purple-500 hover:text-black transition duration-300 group active:scale-95">
+                        <i class="fas fa-music text-3xl text-purple-400 group-hover:text-black transition transform group-hover:scale-110"></i>
+                        <span class="text-[10px] font-black text-purple-100 group-hover:text-black tracking-widest">MUSIK</span>
+                    </button>
+
+                    <button onclick="openUploadModal('downloads')" class="bg-[#0f172a]/80 border border-green-500/30 p-5 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-green-500 hover:text-black transition duration-300 group active:scale-95">
+                        <i class="fas fa-file-archive text-3xl text-green-400 group-hover:text-black transition transform group-hover:scale-110"></i>
+                        <span class="text-[10px] font-black text-green-100 group-hover:text-black tracking-widest">FILE</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-[2.5rem] border border-purple-500/30 relative overflow-hidden shadow-lg shadow-purple-900/10">
+                <div class="absolute -right-6 -bottom-6 text-[8rem] text-purple-500/5 font-black select-none pointer-events-none"><i class="fas fa-cogs"></i></div>
+                
+                <h3 class="text-sm font-black text-white mb-6 flex items-center gap-3 relative z-10">
+                    <span class="w-1.5 h-6 bg-purple-500 rounded-full shadow-[0_0_15px_purple]"></span>
+                    ADVANCED OPERATIONS
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
+                    
+                    <div class="bg-[#0f172a]/60 p-5 rounded-2xl border border-white/10 hover:border-red-500/50 transition duration-300">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h4 class="text-[10px] font-black text-gray-300 uppercase tracking-wider">Auto Cleaner</h4>
+                                <span id="gc-status" class="text-[9px] font-mono text-green-400">● READY</span>
+                            </div>
+                            <i class="fas fa-trash text-red-500 text-xl bg-red-500/10 p-2 rounded-lg"></i>
+                        </div>
+                        <div class="flex gap-2">
+                            <select id="gc-limit" class="bg-white/5 border border-white/20 rounded text-[10px] text-white px-3 py-2 w-full outline-none">
+                                <option value="1">> 1 Hari</option>
+                                <option value="7">> 7 Hari</option>
+                                <option value="30">> 30 Hari</option>
+                            </select>
+                            <button onclick="runGarbageCollector()" class="bg-red-600 text-white px-4 rounded text-[10px] font-bold hover:bg-red-500 shadow-lg">RUN</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0f172a]/60 p-5 rounded-2xl border border-white/10 hover:border-blue-500/50 transition duration-300">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h4 class="text-[10px] font-black text-gray-300 uppercase tracking-wider">Scheduler</h4>
+                                <span id="timer-status" class="text-[9px] font-mono text-gray-500">○ INACTIVE</span>
+                            </div>
+                            <i class="fas fa-clock text-blue-500 text-xl bg-blue-500/10 p-2 rounded-lg"></i>
+                        </div>
+                        <input type="datetime-local" id="lockdown-start" class="bg-white/5 border border-white/20 rounded text-[10px] text-white px-3 py-2 w-full mb-3 outline-none">
+                        <div class="flex gap-2">
+                            <button onclick="setLockdownSchedule()" class="flex-1 bg-blue-600 text-white px-3 py-2 rounded text-[10px] font-bold hover:bg-blue-500 shadow-lg">SET TIMER</button>
+                            <button onclick="cancelLockdownSchedule()" class="px-3 bg-white/5 text-gray-400 border border-white/10 rounded text-[10px] hover:text-red-400"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0f172a]/60 p-5 rounded-2xl border border-white/10 hover:border-green-500/50 transition duration-300">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h4 class="text-[10px] font-black text-gray-300 uppercase tracking-wider">Database</h4>
+                                <div class="text-[9px] text-gray-500">Backup & Restore</div>
+                            </div>
+                            <i class="fas fa-database text-green-500 text-xl bg-green-500/10 p-2 rounded-lg"></i>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="backupDatabase()" class="flex-1 py-2 rounded-lg bg-green-600/20 border border-green-500/30 text-green-400 text-[10px] font-bold hover:bg-green-500 hover:text-black transition flex items-center justify-center gap-2">
+                                <i class="fas fa-download"></i> SAVE
+                            </button>
+                            <button onclick="document.getElementById('restore-file').click()" class="flex-1 py-2 rounded-lg bg-yellow-600/20 border border-yellow-500/30 text-yellow-400 text-[10px] font-bold hover:bg-yellow-500 hover:text-black transition flex items-center justify-center gap-2">
+                                <i class="fas fa-upload"></i> LOAD
+                            </button>
+                            <input type="file" id="restore-file" class="hidden" accept=".json" onchange="restoreDatabase(this)">
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0f172a]/60 p-5 rounded-2xl border border-white/10 hover:border-red-500/50 transition duration-300">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h4 class="text-[10px] font-black text-gray-300 uppercase tracking-wider">Firewall</h4>
+                                <div class="text-[9px] text-gray-500">Block IP Address</div>
+                            </div>
+                            <i class="fas fa-fire text-red-500 text-xl bg-red-500/10 p-2 rounded-lg"></i>
+                        </div>
+                        <div class="flex gap-2 mb-3">
+                            <input type="text" id="firewall-ip" placeholder="192.168.x.x" class="w-full bg-white/5 border border-white/20 rounded text-[10px] text-white px-3 py-2 outline-none font-mono">
+                            <button onclick="blockIP()" class="bg-red-600 text-white px-3 rounded text-[10px] font-bold hover:bg-red-700 shadow-lg">BAN</button>
+                        </div>
+                        <div id="firewall-list" class="h-8 overflow-y-auto bg-black/30 rounded text-[8px] text-gray-500 p-2 border border-white/5 custom-scroll text-center italic">
+                            System Safe
+                        </div>
+                    </div>
+</div> </div> </div> <div class="mt-8 space-y-6">
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    
+                    <div class="glass p-5 rounded-2xl border border-pink-500/30 relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 text-6xl text-pink-500/10"><i class="fas fa-dungeon"></i></div>
+                        <h4 class="text-xs font-black text-pink-400 uppercase tracking-widest mb-2">REGISTRATION GATE</h4>
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] text-gray-400">Status Pendaftaran</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-reg-gate" class="sr-only peer" onchange="toggleRegGate()">
+                                <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-pink-500"></div>
+                            </label>
+                        </div>
+                        <p id="reg-status-text" class="text-[9px] mt-2 text-gray-500 italic">Open/Closed</p>
+                    </div>
+
+                    <div class="glass p-5 rounded-2xl border border-red-500/30 relative overflow-hidden flex flex-col justify-center gap-2">
+                        <h4 class="text-xs font-black text-red-400 uppercase tracking-widest mb-1">GLOBAL FORCE</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="triggerGlobalAction('reload')" class="bg-blue-600/20 border border-blue-500/50 text-blue-400 py-2 rounded-lg text-[10px] font-bold hover:bg-blue-600 hover:text-white transition">
+                                <i class="fas fa-sync-alt mr-1"></i> RELOAD ALL
+                            </button>
+                            <button onclick="triggerGlobalAction('wipe')" class="bg-red-600/20 border border-red-500/50 text-red-400 py-2 rounded-lg text-[10px] font-bold hover:bg-red-600 hover:text-white transition">
+                                <i class="fas fa-skull mr-1"></i> WIPE DATA
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="glass p-5 rounded-2xl border border-yellow-500/30 relative overflow-hidden">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="text-xs font-black text-yellow-400 uppercase tracking-widest">WHITELIST IP</h4>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-whitelist" class="sr-only peer" onchange="toggleWhitelistMode()">
+                                <div class="w-8 h-4 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-yellow-500"></div>
+                            </label>
+                        </div>
+                        <div class="flex gap-1">
+                            <input type="text" id="whitelist-ip-input" placeholder="Allowed IP..." class="w-full bg-black/30 border border-white/10 rounded px-2 py-1 text-[10px] text-white font-mono">
+                            <button onclick="addWhitelistIP()" class="bg-yellow-500 text-black px-2 rounded text-[10px] font-bold"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div id="whitelist-list" class="mt-2 h-12 overflow-y-auto custom-scroll space-y-1"></div>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-3xl border border-indigo-500/30 relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-4 relative z-10">
+                        <div>
+                            <h3 class="text-sm font-black text-white flex items-center gap-2">
+                                <i class="fas fa-user-secret text-indigo-400 text-lg"></i> IP DETECTIVE
+                            </h3>
+                            <p class="text-[10px] text-gray-400">Pendeteksi Akun Ganda (Tuyul/Clone)</p>
+                        </div>
+                        <button onclick="scanForClones()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-full shadow-[0_0_15px_rgba(99,102,241,0.5)] transition transform active:scale-95">
+                            <i class="fas fa-search mr-1"></i> SCAN SEKARANG
+                        </button>
+                    </div>
+                    
+                    <div id="clone-result-area" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto custom-scroll relative z-10">
+                        <div class="col-span-full text-center text-gray-600 text-xs py-10 italic">Klik Scan untuk melacak akun ganda...</div>
+                    </div>
+                    
+                    <i class="fas fa-fingerprint absolute -bottom-5 -right-5 text-[8rem] text-indigo-500/5"></i>
+                </div>
+
+                <div class="glass p-0 rounded-3xl border border-green-500/30 overflow-hidden flex flex-col h-[500px] relative">
+                
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-4 py-3 bg-[#0a0a0a] border-b border-green-900/30 gap-3">
+                    
+                    <h3 class="text-xs font-black text-green-500 flex items-center gap-2 tracking-wider flex-shrink-0">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></span>
+                        SYSTEM TAKEOVER <span class="text-green-800">V3</span>
+                    </h3>
+
+                    <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar pb-1 md:pb-0">
+                        
+                        <input type="file" id="takeover-file-upload" class="hidden" onchange="handleTakeoverFileUpload(this)">
+                        <button onclick="document.getElementById('takeover-file-upload').click()" 
+                            class="flex-shrink-0 group relative px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/30 text-gray-300 text-[10px] font-bold transition-all flex items-center gap-2 whitespace-nowrap">
+                            <i class="fas fa-folder-open text-blue-400 group-hover:text-blue-300"></i> 
+                            <span>LOAD</span>
+                        </button>
+
+                        <div class="h-4 w-[1px] bg-white/10 flex-shrink-0"></div>
+
+                        <div class="flex items-center bg-black/50 border border-green-900/50 rounded-lg px-2 py-1 flex-shrink-0">
+                            <span class="text-[9px] text-gray-500 mr-1 font-mono">TIMER:</span>
+                            <input type="number" id="takeover-duration" value="15" 
+                                class="w-6 bg-transparent text-green-400 text-[10px] font-bold text-center outline-none focus:text-green-300">
+                            <span class="text-[9px] text-green-800 font-bold">s</span>
+                        </div>
+
+                        <button onclick="launchAdvancedTakeover()" 
+                            class="flex-shrink-0 relative px-4 py-1.5 rounded-lg bg-gradient-to-r from-green-600 to-green-500 text-black text-[10px] font-black tracking-widest shadow-[0_0_10px_rgba(34,197,94,0.3)] hover:shadow-[0_0_20px_rgba(34,197,94,0.6)] active:scale-95 transition-all flex items-center gap-2 whitespace-nowrap">
+                            <i class="fas fa-satellite-dish animate-pulse"></i> INJECT
+                        </button>
+
+                        <button onclick="stopTakeoverForce()" 
+                            class="flex-shrink-0 px-3 py-1.5 rounded-lg border border-red-900/50 text-red-500 hover:bg-red-900/20 hover:text-red-400 text-[10px] font-bold transition">
+                            STOP
+                        </button>
+
+                    </div>
+                </div>
+
+                <div class="flex bg-[#050505] border-b border-white/5">
+                    <button onclick="switchTakeoverTab('html')" id="tab-to-html" class="flex-1 py-2 text-[10px] font-bold text-orange-400 border-b-2 border-orange-500 bg-white/5">HTML / INDEX</button>
+                    <button onclick="switchTakeoverTab('css')" id="tab-to-css" class="flex-1 py-2 text-[10px] font-bold text-blue-400 border-b-2 border-transparent hover:bg-white/5 opacity-50">CSS</button>
+                    <button onclick="switchTakeoverTab('js')" id="tab-to-js" class="flex-1 py-2 text-[10px] font-bold text-yellow-400 border-b-2 border-transparent hover:bg-white/5 opacity-50">JS</button>
+                </div>
+
+                <div class="flex-1 bg-[#0d1117] relative">
+                    <textarea id="takeover-input-html" class="w-full h-full bg-transparent text-gray-300 font-mono text-xs p-4 outline-none resize-none leading-relaxed absolute inset-0" placeholder="&#10;<h1>HELLO WORLD</h1>"></textarea>
+                    
+                    <textarea id="takeover-input-css" class="hidden w-full h-full bg-transparent text-blue-200 font-mono text-xs p-4 outline-none resize-none leading-relaxed absolute inset-0" placeholder="/* Masukkan Kode CSS disini */&#10;body { background: black; }"></textarea>
+                    
+                    <textarea id="takeover-input-js" class="hidden w-full h-full bg-transparent text-yellow-200 font-mono text-xs p-4 outline-none resize-none leading-relaxed absolute inset-0" placeholder="// Masukkan Kode JS disini&#10;alert('Hacked!');"></textarea>
+                </div>
+
+                <div class="px-4 py-1 bg-[#050505] border-t border-white/5 flex justify-between items-center">
+                    <span class="text-[8px] text-gray-500">Supports: Drag & Drop File, Auto-Link CSS/JS</span>
+                    <span class="text-[8px] text-green-500 font-mono">READY TO INJECT</span>
+                </div>
+            </div>
+                        <div class="relative flex-1">
+                            <div class="absolute left-0 top-0 bottom-0 w-8 bg-[#161b22] text-gray-600 text-[10px] font-mono pt-2 text-right pr-2 select-none border-r border-white/5 flex flex-col gap-[2px]">
+                                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
+                            </div>
+                            <textarea id="live-css-input" class="w-full h-full bg-transparent text-gray-300 font-mono text-xs p-2 pl-10 outline-none resize-none leading-tight" placeholder="/* Tulis CSS di sini... */&#10;body { filter: grayscale(1); }"></textarea>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-48 bg-[#0f172a] p-4 border-l border-white/5 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-[10px] font-bold text-gray-400 uppercase mb-2">Shortcut</h4>
+                            <ul class="text-[9px] text-gray-500 space-y-1 font-mono">
+                                <li>body { ... }</li>
+                                <li>.glass-card { ... }</li>
+                                <li>.chat-card { ... }</li>
+                                <li>.nav-island { ... }</li>
+                            </ul>
+                        </div>
+<div class="text-[8px] text-center text-cyan-600 font-bold animate-pulse">
+                CHANGES APPLY TO ALL USERS INSTANTLY
+            </div>
+        </div> </div> </div> </div> </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         <section id="view-playlist" class="view-section hidden"><h2 class="text-xl font-bold mb-4 text-white px-2">Playlist Sekolah</h2><div id="playlist-list" class="space-y-3 pb-24"></div></section>
         <section id="view-mading" class="view-section hidden"><h2 class="text-xl font-bold mb-4 text-white px-2">E-Mading</h2><div id="mading-list" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div></section>
@@ -449,6 +829,9 @@
 
 
 
+
+
+
             <div class="absolute bottom-0 left-0 w-full p-3 bg-[#000] border-t border-white/10 z-20 flex justify-between items-center">
                 <div class="flex gap-6 text-2xl text-white px-2">
                     <div class="flex items-center gap-2">
@@ -476,7 +859,134 @@
         </div>
     </div>
 
-    <div id="login-modal" class="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-6 hidden"><div class="glass p-10 rounded-3xl w-full max-w-sm text-center border border-white/10 shadow-2xl relative overflow-hidden"><div class="w-20 h-20 rounded-2xl bg-indigo-600/10 flex items-center justify-center mx-auto mb-6 border border-indigo-500/20"><i class="fas fa-fingerprint text-4xl text-indigo-500"></i></div><h2 class="text-3xl font-bold mb-2 text-white tracking-tight">Login Portal</h2><p class="text-gray-400 text-sm mb-8">Masukkan kredensial member premium.</p><input id="login-user" type="text" placeholder="Username" class="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3.5 mb-3 text-white text-center text-sm focus:border-indigo-500 outline-none transition placeholder-gray-600"><input id="login-code" type="text" placeholder="Kode Akses (6 Digit)" class="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3.5 mb-8 text-white text-center text-sm tracking-[0.3em] font-mono focus:border-indigo-500 outline-none transition placeholder-gray-600"><button id="btn-login-submit" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3.5 rounded-xl font-bold text-sm text-white mb-4 shadow-lg shadow-indigo-500/30 transition transform active:scale-95 tracking-wide">VERIFIKASI MASUK</button><button onclick="doGuest()" class="text-xs text-gray-500 hover:text-white transition">Lanjut sebagai Tamu</button></div></div>
+
+
+
+
+
+<div id="login-modal" class="fixed inset-0 z-[99999] hidden flex items-center justify-center">
+    
+    <div id="dynamic-login-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-1000" 
+         style="background-image: url('https://images.unsplash.com/photo-1495195129352-aeb325a55b65?q=80&w=1776&auto=format&fit=crop');">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-[400px] mx-4">
+        <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-8 shadow-2xl text-center animate-fade-in-up">
+            
+            <div class="mb-4 flex justify-center">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg animate-pulse">
+                    <i class="fas fa-school text-2xl text-white"></i>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">Welcome back!</h2>
+            <p class="text-gray-300 text-xs mb-8">Masuk untuk mengakses portal sekolah.</p>
+
+            <div id="form-login" class="space-y-4">
+                <div class="space-y-4">
+                    <div class="relative">
+                         <i class="fas fa-user absolute left-4 top-4 text-gray-400"></i>
+                         <input id="login-user" type="text" placeholder="Username" class="w-full bg-black/20 border border-white/10 rounded-xl px-12 py-3.5 text-white text-sm placeholder-gray-400 outline-none focus:border-white/50 focus:bg-black/30 transition">
+                    </div>
+                    
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-4 text-gray-400"></i>
+                        <input id="login-pass" type="password" placeholder="Password" class="w-full bg-black/20 border border-white/10 rounded-xl px-12 py-3.5 text-white text-sm placeholder-gray-400 outline-none focus:border-white/50 focus:bg-black/30 transition">
+                        <i class="fas fa-eye absolute right-4 top-4 text-gray-400 cursor-pointer hover:text-white" onclick="togglePass('login-pass')"></i>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center text-[10px] text-gray-300 mt-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" class="accent-purple-500 rounded w-3 h-3"> Ingat Saya
+                    </label>
+                    <span class="cursor-pointer hover:text-white">Lupa Password?</span>
+                </div>
+
+                <button onclick="doLogin()" class="w-full bg-white text-black font-bold py-3.5 rounded-xl mt-6 hover:bg-gray-200 transition shadow-lg active:scale-95 transform hover:-translate-y-1">MASUK</button>
+                
+                <div class="text-xs text-gray-400 mt-4">Atau</div>
+
+                <p class="text-[10px] text-gray-400 mt-6">
+                    Belum punya akun? <span id="tab-register" onclick="switchAuthTab('register')" class="text-white font-bold cursor-pointer hover:underline">Daftar Sekarang</span>
+                </p>
+                
+                <span id="tab-login" class="hidden"></span>
+            </div>
+
+            <div id="form-register" class="space-y-4 hidden">
+                <input id="reg-user" type="text" placeholder="Buat Username Baru" class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/50 text-center">
+                <input id="reg-pass" type="text" placeholder="Buat Password" class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/50 text-center">
+                <textarea id="reg-reason" rows="2" placeholder="Alasan Bergabung?" class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none resize-none text-center"></textarea>
+                
+                <button onclick="doRegister()" class="w-full bg-purple-600 text-white font-bold py-3.5 rounded-xl mt-2 hover:bg-purple-500 transition shadow-lg transform hover:-translate-y-1">Kirim Permintaan</button>
+                
+                <p class="text-[10px] text-gray-400 mt-4">
+                    Sudah punya akun? <span onclick="switchAuthTab('login')" class="text-white font-bold cursor-pointer hover:underline">Login</span>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div id="user-editor-modal" class="fixed inset-0 z-[99999] hidden flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm">
+    <div class="glass p-6 rounded-3xl w-full max-w-sm border border-green-500/30 shadow-[0_0_50px_rgba(34,197,94,0.2)] relative">
+        <button onclick="closeUserEditor()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        
+        <h3 class="text-xl font-black text-green-400 mb-1 uppercase tracking-widest"><i class="fas fa-user-edit"></i> GOD EDIT</h3>
+        <p class="text-[10px] text-gray-500 mb-6 font-mono">Memanipulasi Data User Target</p>
+        
+        <div class="space-y-4">
+            <div class="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10">
+                <img id="edit-u-pic" src="" class="w-10 h-10 rounded-full bg-gray-800 object-cover">
+                <div>
+                    <h4 id="edit-u-name" class="text-sm font-bold text-white">Username</h4>
+                    <span id="edit-u-id" class="text-[9px] text-gray-500 font-mono">UID: ...</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-[9px] text-gray-400 uppercase font-bold">Role / Rank</label>
+                    <select id="edit-u-role" class="w-full bg-black/50 border border-white/20 rounded-lg px-2 py-2 text-xs text-white outline-none focus:border-green-500">
+                        <option value="member">Member</option>
+                        <option value="vip">VIP</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="admin">Admin</option>
+                        <option value="banned">BANNED</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[9px] text-gray-400 uppercase font-bold">Level</label>
+                    <input type="number" id="edit-u-level" class="w-full bg-black/50 border border-white/20 rounded-lg px-2 py-2 text-xs text-white outline-none focus:border-green-500">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[9px] text-gray-400 uppercase font-bold">Koin (Money)</label>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-coins text-yellow-400"></i>
+                    <input type="number" id="edit-u-coins" class="w-full bg-black/50 border border-white/20 rounded-lg px-2 py-2 text-xs text-white outline-none focus:border-yellow-500 font-mono">
+                </div>
+            </div>
+            
+             <div>
+                <label class="text-[9px] text-gray-400 uppercase font-bold">Ganti Foto (URL)</label>
+                <input type="text" id="edit-u-pic-url" class="w-full bg-black/50 border border-white/20 rounded-lg px-2 py-2 text-xs text-white outline-none focus:border-blue-500">
+            </div>
+
+            <button onclick="saveUserChanges()" class="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl shadow-lg transition transform active:scale-95">
+                <i class="fas fa-save mr-2"></i> SIMPAN PERUBAHAN
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
 
 
 
@@ -490,6 +1000,17 @@
             <div class="msg-menu-icon bg-pink-500/20 text-pink-500"><i class="fas fa-heart"></i></div>
             <span>Like</span>
         </div>
+        
+        
+        
+        <div class="msg-menu-item" onclick="enterSelectionMode(selectedMsg.id)">
+    <div class="msg-menu-icon bg-green-500/20 text-green-500"><i class="fas fa-check-circle"></i></div>
+    <span>Pilih</span>
+</div>
+        
+        
+        
+        
         <div class="msg-menu-item" onclick="actionCopy()">
             <div class="msg-menu-icon bg-blue-500/20 text-blue-500"><i class="fas fa-copy"></i></div>
             <span>Salin</span>
@@ -544,6 +1065,37 @@
 
 
 
+
+
+
+
+<div id="secure-viewer" class="fixed inset-0 z-[999999] bg-black hidden flex-col items-center justify-center select-none">
+    <div class="absolute top-0 left-0 h-1.5 bg-red-600 w-full transition-all duration-[10000ms] ease-linear" id="secure-timer-bar" style="width: 100%"></div>
+    
+    <div class="relative w-full h-full flex items-center justify-center p-2">
+        <div id="secure-curtain" class="absolute inset-0 bg-black z-50 hidden flex-col items-center justify-center text-red-500">
+            <i class="fas fa-eye-slash text-6xl mb-4 animate-pulse"></i>
+            <h2 class="font-black text-2xl uppercase tracking-widest">JANGAN DI-SS!</h2>
+        </div>
+        
+        <img id="secure-img" src="" class="max-h-[90vh] max-w-[95vw] object-contain pointer-events-none">
+    </div>
+
+    <p class="absolute bottom-10 text-gray-500 text-xs font-mono animate-pulse">Menghancurkan pesan dalam <span id="secure-countdown">10</span>s...</p>
+</div>
+
+
+<div id="bulk-action-bar">
+    <div class="flex items-center gap-3">
+        <button onclick="exitSelectionMode()" class="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20">
+            <i class="fas fa-times"></i>
+        </button>
+        <span class="text-white font-bold text-sm"><span id="select-count">0</span> Dipilih</span>
+    </div>
+    <button onclick="deleteBulkMessages()" class="px-6 py-2 rounded-full bg-red-600 text-white font-bold text-sm hover:bg-red-700 shadow-lg shadow-red-900/50 transition transform active:scale-95">
+        <i class="fas fa-trash mr-2"></i> HAPUS
+    </button>
+</div>
 
 
 
